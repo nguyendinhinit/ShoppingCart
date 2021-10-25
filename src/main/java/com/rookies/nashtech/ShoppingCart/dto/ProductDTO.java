@@ -1,5 +1,6 @@
 package com.rookies.nashtech.ShoppingCart.dto;
 
+import com.rookies.nashtech.ShoppingCart.entity.Category;
 import lombok.Data;
 
 @Data
@@ -9,6 +10,6 @@ public class ProductDTO {
     private float price;
     private String brand;
     private String color;
-    private int category_id;
+    private String category;
     private int quantity;
 }

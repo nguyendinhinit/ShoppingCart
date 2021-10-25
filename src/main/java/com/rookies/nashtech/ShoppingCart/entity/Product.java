@@ -24,7 +24,7 @@ public class Product {
     private String color;
     @OneToOne
     @JoinColumn(name = "category_id")
-    private Category categoryId;
+    private Category category;
     @Column(name = "quantity")
     private int quantity;
 }

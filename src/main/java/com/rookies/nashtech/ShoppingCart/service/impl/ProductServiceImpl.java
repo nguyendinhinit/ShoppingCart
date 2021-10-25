@@ -2,23 +2,39 @@ package com.rookies.nashtech.ShoppingCart.service.impl;
 
 import com.rookies.nashtech.ShoppingCart.dto.ProductDTO;
 import com.rookies.nashtech.ShoppingCart.entity.Product;
+import com.rookies.nashtech.ShoppingCart.mapper.ProductsMapper;
 import com.rookies.nashtech.ShoppingCart.repository.ProductRepository;
 import com.rookies.nashtech.ShoppingCart.service.ProductService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
+    private final ProductsMapper productsMapper;
+    private final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
 
     @Autowired
-    public ProductServiceImpl(ProductRepository productRepository) {
+    public ProductServiceImpl(ProductRepository productRepository, ProductsMapper productsMapper) {
         this.productRepository = productRepository;
+        this.productsMapper = productsMapper;
     }
 
     @Override
     public ProductDTO findProductByID(Integer id) {
-        Product productDTO = productRepository.findProductById(id);
-        return null;
+        logger.info("Find Product by Id with id:" + id);
+        Product product = productRepository.findProductById(id);
+        return productsMapper.fromEntity(product);
+    }
+
+    @Override
+    public List<ProductDTO> filterProduct(String keyword, Float price) {
+        List<Product> products = productRepository.filter(keyword, price);
+        return products.stream().map(productsMapper::fromEntity).collect(Collectors.toList());
     }
 }
