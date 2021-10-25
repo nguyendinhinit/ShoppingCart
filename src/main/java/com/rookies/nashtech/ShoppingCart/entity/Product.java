@@ -18,8 +18,8 @@ public class Product {
     private String name;
     @Column(name = "price")
     private float price;
-    @Column(name = "brach")
-    private String branch;
+    @Column(name = "brand")
+    private String brand;
     @Column(name = "color")
     private String color;
     @OneToOne

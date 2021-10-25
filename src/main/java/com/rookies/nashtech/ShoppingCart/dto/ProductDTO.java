@@ -7,7 +7,7 @@ public class ProductDTO {
     private int id;
     private String name;
     private float price;
-    private String branch;
+    private String brand;
     private String color;
     private int category_id;
     private int quantity;
