@@ -1,28 +1,38 @@
 package com.rookies.nashtech.ShoppingCart.entity;
 
-import lombok.*;
-
-import javax.persistence.*;
 import java.util.Date;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @ToString
 @RequiredArgsConstructor
 @Entity
+@Table(name = "orders")
 public class Order {
-    @Id
-    @Column(name = "id", nullable = false)
-    private int id;
-    @Column(name = "date_created")
-    private Date dateCreated;
-    @Column(name = "state")
-    private String state;
-    @Column(name = "address")
-    private String address;
-    @OneToOne
-    @JoinColumn(name = "phone")
-    private Cart phone;
-    @Column(name = "quantity")
-    private int quantity;
+  @Id
+  @Column(name = "id", nullable = false)
+  private int id;
+
+  @ManyToOne
+  @JoinColumn(name = "user_id")
+  private User user;
+
+  @Column(name = "date_created")
+  private Date dateCreated;
+
+  @Column(name = "state")
+  private String state;
+
+  @Column(name = "total_cost")
+  private float totalCost;
 }
