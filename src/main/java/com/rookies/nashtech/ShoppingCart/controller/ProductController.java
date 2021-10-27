@@ -4,6 +4,7 @@ import com.rookies.nashtech.ShoppingCart.dto.ProductDTO;
 import com.rookies.nashtech.ShoppingCart.service.ProductService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,4 +34,5 @@ public class ProductController {
         List<ProductDTO> products = productService.filterProduct(keyword,price);
         return ResponseEntity.ok(products);
     }
+
 }

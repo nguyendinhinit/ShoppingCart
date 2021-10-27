@@ -27,4 +27,10 @@ public class Product {
     private Category category;
     @Column(name = "quantity")
     private int quantity;
+
+    //    Constructor to testing
+    public Product(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 }
