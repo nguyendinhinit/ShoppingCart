@@ -3,6 +3,7 @@ package com.rookies.nashtech.ShoppingCart.mapper;
 import org.springframework.stereotype.Component;
 import com.rookies.nashtech.ShoppingCart.dto.CartDTO;
 import com.rookies.nashtech.ShoppingCart.entity.Cart;
+import com.rookies.nashtech.ShoppingCart.entity.User;
 
 /**
  * Mapper between Entity {@link Cart} and DTO {@link CartDTO}
@@ -15,12 +16,13 @@ public class CartMapper {
   /**
    * Map an Entity {@link Cart} to DTO {@link CartDTO}
    * 
-   * @param cart An Entiy Cart needs to be mapped
+   * @param cart An Entity Cart needs to be mapped
    * @return {@link CartDTO} mapped from Entity input
    */
   public CartDTO fromEntity(Cart cart) {
     CartDTO dto = new CartDTO();
-    dto.setCartId(cart.getId());
+    dto.setId(cart.getId());
+    dto.setUserId(cart.getUser().getId());
     dto.setProduct(cart.getProduct());
     dto.setQuantity(cart.getQuantity());
     return dto;
@@ -37,7 +39,10 @@ public class CartMapper {
   }
 
   public Cart fromDTO(Cart newCart, CartDTO payload) {
-    newCart.setId(payload.getCartId());
+    User user = new User();
+    user.setId(payload.getId());
+    newCart.setId(payload.getId());
+    newCart.setUser(user);
     newCart.setProduct(payload.getProduct());
     newCart.setQuantity(payload.getQuantity());
     return newCart;

@@ -6,12 +6,12 @@ package com.rookies.nashtech.ShoppingCart.dto;
  * @author ManhTuan
  */
 import com.rookies.nashtech.ShoppingCart.entity.Product;
-import com.rookies.nashtech.ShoppingCart.entity.User;
 import lombok.Data;
 
 @Data
 public class CartDTO {
-  private User cartId;
+  private Integer id;
+  private Integer userId;
   private Product product;
   private int quantity;
 }

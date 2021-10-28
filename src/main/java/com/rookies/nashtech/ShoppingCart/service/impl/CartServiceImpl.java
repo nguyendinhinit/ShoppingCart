@@ -53,6 +53,7 @@ public class CartServiceImpl implements CartService {
    * 
    */
   @Override
+  @Transactional
   public CartDTO addToCart(CartDTO payload) {
 
     logger.info("Payload null check");
@@ -61,11 +62,11 @@ public class CartServiceImpl implements CartService {
       throw new IllegalArgumentException("Request body can not be null.");
     }
 
-    logger.info("Cart ID null check");
-    if (payload.getCartId() == null) {
-      logger.error("Cart ID is null");
-      throw new IllegalArgumentException("Cart ID (User) can not be null.");
-    }
+    // logger.info("Cart ID null check");
+    // if (payload.getId() == null) {
+    // logger.error("Cart ID is null");
+    // throw new IllegalArgumentException("Cart ID (User) can not be null.");
+    // }
 
     logger.info("Product null check");
     if (payload.getProduct() == null) {
@@ -79,10 +80,10 @@ public class CartServiceImpl implements CartService {
       throw new IllegalArgumentException("Invalid quantity.");
     }
 
-    logger.info("Verify Cart ID with User ID: " + payload.getCartId().getId());
-    Optional<User> optionalUser = userRepository.findById(payload.getCartId().getId());
+    logger.info("Verify Cart ID with User ID: " + payload.getUserId());
+    Optional<User> optionalUser = userRepository.findById(payload.getUserId());
     if (optionalUser.isEmpty()) {
-      logger.error("User not found with id : " + payload.getCartId().getId());
+      logger.error("User not found with id : " + payload.getUserId());
       throw new IllegalArgumentException("User not found.");
     }
 
@@ -93,13 +94,16 @@ public class CartServiceImpl implements CartService {
       throw new IllegalArgumentException("Product not found.");
     }
 
-    Cart newCart = mapper.fromDTO(payload);
+    Cart newCart = new Cart();
+    newCart.setProduct(payload.getProduct());
+    newCart.setQuantity(payload.getQuantity());
+    newCart.setUser(optionalUser.get());
     logger.info("Create Cart.");
     Cart createdCart = cartRepository.save(newCart);
 
     productService.decreaseProductQuantity(payload.getProduct().getId(), payload.getQuantity());
 
-    logger.info("Cart created with Cart ID: " + payload.getCartId().getId());
+    logger.info("Cart created with Cart ID: " + payload.getId());
     return mapper.fromEntity(createdCart);
   }
 
