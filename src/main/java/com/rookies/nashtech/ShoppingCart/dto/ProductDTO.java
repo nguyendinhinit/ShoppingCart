@@ -1,6 +1,5 @@
 package com.rookies.nashtech.ShoppingCart.dto;
 
-import com.rookies.nashtech.ShoppingCart.entity.Category;
 import lombok.Data;
 
 @Data
