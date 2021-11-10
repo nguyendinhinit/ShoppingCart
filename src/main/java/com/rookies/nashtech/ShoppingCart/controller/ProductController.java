@@ -4,7 +4,6 @@ import com.rookies.nashtech.ShoppingCart.dto.ProductDTO;
 import com.rookies.nashtech.ShoppingCart.service.ProductService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,9 +29,16 @@ public class ProductController {
 
     @GetMapping(value = "/product/filter")
     public ResponseEntity<List<ProductDTO>> filter(@RequestParam(name = "keyword", required = false) String keyword,
-                                             @RequestParam(name = "price",required = false) Float price) {
+                                             @RequestParam(name = "price",required = false) Double price) {
         List<ProductDTO> products = productService.filterProduct(keyword,price);
         return ResponseEntity.ok(products);
     }
+    //TODO: pageable + Spring data JPA specification
+    // SOLID
 
+    @GetMapping(value = "/product/getall")
+    public ResponseEntity<List<ProductDTO>> getAll(){
+        List<ProductDTO> products = productService.findProductByPriceWithPaging(100.0,5);
+        return ResponseEntity.ok(products);
+    }
 }

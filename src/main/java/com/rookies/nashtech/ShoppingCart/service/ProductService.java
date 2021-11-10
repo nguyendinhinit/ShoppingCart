@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface ProductService {
     ProductDTO findProductByID(Integer id);
-    List<ProductDTO> filterProduct(String keyword, Float price);
+    List<ProductDTO> filterProduct(String keyword, Double price);
+    List<ProductDTO> findProductByPriceWithPaging(Double price, Integer paging);
 }
