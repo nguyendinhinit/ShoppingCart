@@ -16,7 +16,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     EntityManager entityManager;
 
     @Override
-    public List<Product> filter(String keyword, Float price) {
+    public List<Product> filter(String keyword, Double price) {
         String sql = "SELECT p FROM Product p";
         List<String> conditions = new ArrayList<>();
         if (keyword != null) {

@@ -8,6 +8,9 @@ import com.rookies.nashtech.ShoppingCart.service.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -83,6 +86,20 @@ public class ProductServiceImpl implements ProductService {
     return productsMapper.fromEntity(decreasedQuantityProduct);
   }
 
+    @Override
+    public List<ProductDTO> filterProduct(String keyword, Double price) {
+        List<Product> products = productRepository.filter(keyword, price);
+        return products.stream().map(productsMapper::fromEntity).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProductDTO> findProductByPriceWithPaging(Double price, Integer paging) {
+        Pageable firstPageWithPagingElement = PageRequest.of(0, paging);
+        Pageable secondPageWithPagingElement = PageRequest.of(1, paging);
+        Page<Product> allProduct = productRepository.findProductsByPrice(price,firstPageWithPagingElement);
+        return allProduct.stream().map(productsMapper::fromEntity).collect(Collectors.toList());
+    }
+
   /**
    * Get Product Entity by id
    * 
@@ -100,4 +117,5 @@ public class ProductServiceImpl implements ProductService {
     }
     return product;
   }
+
 }
