@@ -17,9 +17,9 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "categories")
 public class Category {
-    @Id
-    @Column(name = "id", nullable = false)
-    private int id;
-    @Column(name = "name")
-    private String name;
+  @Id
+  @Column(name = "code", nullable = false)
+  private String code;
+  @Column(name = "name")
+  private String name;
 }

@@ -12,22 +12,25 @@ import javax.persistence.*;
 @Setter
 @ToString
 @RequiredArgsConstructor
-@Table(name = "carts")
-public class Cart {
-
+@Table(name = "users")
+public class User {
   @Id
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
-  @ManyToOne
-  @JoinColumn(name = "user_id")
-  private User user;
+  @Column(name = "username")
+  private String username;
 
-  @OneToOne
-  @JoinColumn(name = "product_id")
-  private Product product;
+  @Column(name = "password")
+  private String password;
 
-  @Column(name = "quantity")
-  private Integer quantity;
+  @Column(name = "email")
+  private String email;
+
+  @Column(name = "address")
+  private String address;
+
+  @Column(name = "phone_number")
+  private String phoneNumber;
 }
