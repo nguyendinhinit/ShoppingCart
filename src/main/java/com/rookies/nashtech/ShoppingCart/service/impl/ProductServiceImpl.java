@@ -118,4 +118,12 @@ public class ProductServiceImpl implements ProductService {
     return product;
   }
 
+  @Override
+  public List<ProductDTO> findProductByPriceWithPaging(Double price, Integer paging) {
+    Pageable firstPageWithPagingElement = PageRequest.of(0, paging);
+    Pageable secondPageWithPagingElement = PageRequest.of(1, paging);
+    Page<Product> allProduct = productRepository.findProductsByPrice(price,firstPageWithPagingElement);
+    return allProduct.stream().map(productsMapper::fromEntity).collect(Collectors.toList());
+  }
+
 }

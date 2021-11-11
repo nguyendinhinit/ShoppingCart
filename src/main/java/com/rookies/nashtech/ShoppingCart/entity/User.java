@@ -19,7 +19,6 @@ import javax.persistence.*;
 @RequiredArgsConstructor
 @Table(name = "users")
 public class User {
-
   @Id
   @Column(name = "username")
   private String username;

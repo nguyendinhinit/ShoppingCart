@@ -13,6 +13,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Transactional
 @Service
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
@@ -23,20 +24,17 @@ public class OrderServiceImpl implements OrderService {
         this.orderMapper = orderMapper;
     }
 
-    @Transactional
     @Override
     public List<OrderDTO> getAllOrders() {
         return orderRepository.findAll().stream().map(orderMapper::fromEntity).collect(Collectors.toList());
     }
 
-    @Transactional
     @Override
     public OrderDTO getOrderById(int orderId) {
         Order order = orderRepository.findOrderById(orderId);
         return orderMapper.fromEntity(order);
     }
 
-    @Transactional
     @Override
     public OrderDTO payOrder(int orderId) {
         Order currentOrder = orderRepository.findOrderById(orderId);

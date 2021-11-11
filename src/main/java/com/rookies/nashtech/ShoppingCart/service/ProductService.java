@@ -23,4 +23,6 @@ public interface ProductService {
 
   Product findProductEntityByID(Integer id);
 
+  List<ProductDTO> findProductByPriceWithPaging(Double price, Integer paging);
+
 }

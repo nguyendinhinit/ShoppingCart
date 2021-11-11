@@ -20,22 +20,21 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @ApiOperation(value = "Get An Asset Using id", response = ProductDTO.class)
+    @ApiOperation(value = "Get a product Using id", response = ProductDTO.class)
     @GetMapping(value = "/product/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProductDTO> getProduct(@PathVariable Integer id) {
         ProductDTO product = productService.findProductByID(id);
         return ResponseEntity.ok(product);
     }
-
+    @ApiOperation(value = "Filter a product", response = ProductDTO.class)
     @GetMapping(value = "/product/filter")
     public ResponseEntity<List<ProductDTO>> filter(@RequestParam(name = "keyword", required = false) String keyword,
-                                             @RequestParam(name = "price",required = false) Double price) {
+                                             @RequestParam(name = "price",required = false) Float price) {
         List<ProductDTO> products = productService.filterProduct(keyword,price);
         return ResponseEntity.ok(products);
     }
-    //TODO: pageable + Spring data JPA specification
-    // SOLID
 
+    @ApiOperation(value = "Get all product with paging", response = ProductDTO.class)
     @GetMapping(value = "/product/getall")
     public ResponseEntity<List<ProductDTO>> getAll(){
         List<ProductDTO> products = productService.findProductByPriceWithPaging(100.0,5);
