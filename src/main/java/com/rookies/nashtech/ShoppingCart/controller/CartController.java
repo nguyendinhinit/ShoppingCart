@@ -8,25 +8,27 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.rookies.nashtech.ShoppingCart.dto.CartDTO;
-import com.rookies.nashtech.ShoppingCart.service.CartService;
+import com.rookies.nashtech.ShoppingCart.dto.CartItemDTO;
+import com.rookies.nashtech.ShoppingCart.service.CartItemService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import javassist.NotFoundException;
 
 @RestController
 @RequestMapping("/api/v1")
 public class CartController {
-  private final CartService cartService;
+  private final CartItemService cartItemService;
 
   @Autowired
-  public CartController(CartService cartService) {
-    this.cartService = cartService;
+  public CartController(CartItemService cartService) {
+    this.cartItemService = cartService;
   }
 
   @ApiOperation(value = "Add Product to Cart", response = CartDTO.class)
   @PostMapping(value = "/cart", produces = MediaType.APPLICATION_JSON_VALUE)
   @CrossOrigin
-  public ResponseEntity<CartDTO> addToCart(@RequestBody CartDTO payload) {
-    CartDTO createdCart = cartService.addToCart(payload);
+  public ResponseEntity<CartItemDTO> addToCart(@RequestBody CartItemDTO payload) throws NotFoundException {
+    CartItemDTO createdCart = cartItemService.addToCart(payload);
     return ResponseEntity.ok(createdCart);
   }
 }
