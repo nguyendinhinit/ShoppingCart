@@ -13,6 +13,8 @@ import com.rookies.nashtech.ShoppingCart.repository.CartRepository;
 import com.rookies.nashtech.ShoppingCart.repository.UserRepository;
 import com.rookies.nashtech.ShoppingCart.service.CartService;
 import javassist.NotFoundException;
+import com.rookies.nashtech.ShoppingCart.service.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
 @Transactional(readOnly = true)

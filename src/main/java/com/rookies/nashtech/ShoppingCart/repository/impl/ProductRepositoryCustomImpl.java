@@ -9,7 +9,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Repository
 public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
@@ -17,7 +16,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     EntityManager entityManager;
 
     @Override
-    public List<Product> filter(String keyword, Float price) {
+    public List<Product> filter(String keyword, Double price) {
         String sql = "SELECT p FROM Product p";
         List<String> conditions = new ArrayList<>();
         if (keyword != null) {
