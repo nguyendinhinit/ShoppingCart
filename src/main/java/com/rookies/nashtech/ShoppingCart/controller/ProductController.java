@@ -29,7 +29,7 @@ public class ProductController {
     @ApiOperation(value = "Filter a product", response = ProductDTO.class)
     @GetMapping(value = "/product/filter")
     public ResponseEntity<List<ProductDTO>> filter(@RequestParam(name = "keyword", required = false) String keyword,
-                                             @RequestParam(name = "price",required = false) Float price) {
+                                             @RequestParam(name = "price",required = false) Double price) {
         List<ProductDTO> products = productService.filterProduct(keyword,price);
         return ResponseEntity.ok(products);
     }

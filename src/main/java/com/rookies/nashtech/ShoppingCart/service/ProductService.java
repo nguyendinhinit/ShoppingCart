@@ -10,19 +10,16 @@ import java.util.List;
 public interface ProductService {
 
     ProductDTO findProductByID(Integer id);
+
     List<ProductDTO> filterProduct(String keyword, Double price);
+
     List<ProductDTO> findProductByPriceWithPaging(Double price, Integer paging);
 
-  ProductDTO findProductByID(Integer id);
+    ProductDTO decreaseProductQuantity(Integer id, Integer number);
 
-  List<ProductDTO> filterProduct(String keyword, Float price);
+    ProductDTO increaseProductQuantity(Integer id, Integer number);
 
-  ProductDTO decreaseProductQuantity(Integer id, Integer number);
+    Product findProductEntityByID(Integer id);
 
-  ProductDTO increaseProductQuantity(Integer id, Integer number);
-
-  Product findProductEntityByID(Integer id);
-
-  List<ProductDTO> findProductByPriceWithPaging(Double price, Integer paging);
 
 }

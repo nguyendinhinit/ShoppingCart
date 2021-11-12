@@ -9,7 +9,7 @@ public class OrderMapper {
     public OrderDTO fromEntity(Order order) {
         OrderDTO orderDTO = new OrderDTO();
         orderDTO.setId(order.getId());
-        orderDTO.setUserId(order.getUser().getId());
+        orderDTO.setUserName(order.getUser().getUsername());
         orderDTO.setDateCreated(order.getDateCreated());
         orderDTO.setTotalCost(order.getTotalCost());
         orderDTO.setState(order.getState());
