@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Getter;
@@ -13,24 +14,27 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.*;
-
 @Entity
 @Getter
 @Setter
 @ToString
 @RequiredArgsConstructor
-@Table(name = "carts")
-public class Cart {
+@Table(name = "cart_item")
+public class CartItem {
 
   @Id
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
+  @ManyToOne
+  @JoinColumn(name = "cart_id")
+  private Cart cart;
+
   @OneToOne
-  @JoinColumn(name = "username")
-  private User user;
+  @JoinColumn(name = "product_id")
+  private Product product;
 
-
+  @Column(name = "quantity")
+  private Integer quantity;
 }

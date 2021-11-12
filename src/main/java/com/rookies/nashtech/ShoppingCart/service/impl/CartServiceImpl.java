@@ -1,112 +1,101 @@
 package com.rookies.nashtech.ShoppingCart.service.impl;
 
+import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.rookies.nashtech.ShoppingCart.dto.CartDTO;
 import com.rookies.nashtech.ShoppingCart.entity.Cart;
-import com.rookies.nashtech.ShoppingCart.entity.Product;
 import com.rookies.nashtech.ShoppingCart.entity.User;
 import com.rookies.nashtech.ShoppingCart.mapper.CartMapper;
 import com.rookies.nashtech.ShoppingCart.repository.CartRepository;
-import com.rookies.nashtech.ShoppingCart.repository.ProductRepository;
 import com.rookies.nashtech.ShoppingCart.repository.UserRepository;
 import com.rookies.nashtech.ShoppingCart.service.CartService;
+import javassist.NotFoundException;
 import com.rookies.nashtech.ShoppingCart.service.ProductService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
-/**
- * Business logic of Cart.
- * 
- * @author ManhTuan
- *
- */
 @Service
 @Transactional(readOnly = true)
 public class CartServiceImpl implements CartService {
 
   private final Logger logger = LoggerFactory.getLogger(CartServiceImpl.class);
 
-  private final CartRepository cartRepository;
   private final CartMapper mapper;
   private final UserRepository userRepository;
-  private final ProductRepository productRepository;
-  private final ProductService productService;
+  private final CartRepository cartRepository;
 
-  @Autowired
-  public CartServiceImpl(CartRepository cartRepository, CartMapper mapper, UserRepository userRepository, ProductRepository productRepository, ProductService productService) {
+  public CartServiceImpl(CartMapper mapper, UserRepository userRepository, CartRepository cartRepository) {
+    this.userRepository = userRepository;
     this.cartRepository = cartRepository;
     this.mapper = mapper;
-    this.userRepository = userRepository;
-    this.productRepository = productRepository;
-    this.productService = productService;
   }
 
   /**
-   * Add Product to Cart
+   * Check the existence of a shopping cart belonging to the current user. If not exist, create a new one.
    * 
-   * @param payload the {@link CartDTO} input
-   * @return CartDTO just added
-   * @throws IllegalArgumentException if payload input is {@code null}, {@code invalid} or {@code null} User, Product, or {@code invalid} Quantity
+   * @param user User object input
+   * @throws NotFoundException If user not found with User input
+   * @throws IllegalArgumentException if User input is null
+   * @return An exist Entity Cart or Cart just created
    * 
+   * @author ManhTuan
+   */
+  @Override
+  public Cart cartCheck(User user) throws NotFoundException {
+    if (user == null) {
+      throw new IllegalArgumentException("Username cannot be null!");
+    }
+    Optional<Cart> optionalCart = cartRepository.findByUser(user);
+    if (!optionalCart.isPresent()) {
+      return createCart(user);
+    }
+    return optionalCart.get();
+  }
+
+  /**
+   * Create Cart for current User login
+   * 
+   * @param username User object input
+   * @throws NotFoundException If User not found
+   * @throws IllegarArgumentException If User input is null
+   * @return Created Entity Cart
+   * 
+   * @author ManhTuan
    */
   @Override
   @Transactional
-  public CartDTO addToCart(CartDTO payload) {
-
-    logger.info("Payload null check");
-    if (payload == null) {
-      logger.error("Payload is null");
-      throw new IllegalArgumentException("Request body can not be null.");
+  public Cart createCart(User user) throws NotFoundException {
+    if (user == null) {
+      throw new IllegalArgumentException("User cannot be null!");
     }
-
-    // logger.info("Cart ID null check");
-    // if (payload.getId() == null) {
-    // logger.error("Cart ID is null");
-    // throw new IllegalArgumentException("Cart ID (User) can not be null.");
-    // }
-
-    logger.info("Product null check");
-    if (payload.getProduct() == null) {
-      logger.error("Product is null");
-      throw new IllegalArgumentException("Product can not be null.");
+    Optional<User> optionalUser = userRepository.findByUsername(user.getUsername());
+    if (!optionalUser.isPresent()) {
+      throw new NotFoundException("User not found with username: " + user);
     }
-
-    logger.info("Verify Quantity value: " + payload.getQuantity());
-    if (payload.getQuantity() < 0) {
-      logger.error("Quantity is invalid with value: " + payload.getQuantity());
-      throw new IllegalArgumentException("Invalid quantity.");
-    }
-
-    logger.info("Verify Cart ID with User ID: " + payload.getUserId());
-    Optional<User> optionalUser = userRepository.findById(payload.getUserId());
-    if (optionalUser.isEmpty()) {
-      logger.error("User not found with id : " + payload.getUserId());
-      throw new IllegalArgumentException("User not found.");
-    }
-
-    logger.info("Verify Product with Product ID: " + payload.getProduct().getId());
-    Product product = productRepository.findProductById(payload.getProduct().getId());
-    if (product == null) {
-      logger.error("Product not found with id : " + payload.getProduct().getId());
-      throw new IllegalArgumentException("Product not found.");
-    }
-
-    Cart newCart = new Cart();
-    newCart.setProduct(payload.getProduct());
-    newCart.setQuantity(payload.getQuantity());
-    newCart.setUser(optionalUser.get());
-    logger.info("Create Cart.");
-    Cart createdCart = cartRepository.save(newCart);
-
-    productService.decreaseProductQuantity(payload.getProduct().getId(), payload.getQuantity());
-
-    logger.info("Cart created with Cart ID: " + payload.getId());
-    return mapper.fromEntity(createdCart);
+    Cart cart = new Cart();
+    cart.setUser(optionalUser.get());
+    return cartRepository.save(cart);
   }
 
+  /**
+   * Mapping CartDTO to Cart
+   * 
+   * @param payload CartDTO needs to mapped
+   * @return An Entity Cart
+   * 
+   * @author ManhTuan
+   */
+  @Override
+  public Cart mapFromDTO(CartDTO payload) {
+    Cart cart = new Cart();
+    Optional<User> optionalUser = userRepository.findByUsername(payload.getUsername());
+    if (optionalUser.isPresent()) {
+      cart.setId(payload.getId());
+      cart.setUser(optionalUser.get());
+    }
+    return cart;
+  }
 
 }
