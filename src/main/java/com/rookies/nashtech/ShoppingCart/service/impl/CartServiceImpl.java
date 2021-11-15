@@ -1,10 +1,5 @@
 package com.rookies.nashtech.ShoppingCart.service.impl;
 
-import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import com.rookies.nashtech.ShoppingCart.dto.CartDTO;
 import com.rookies.nashtech.ShoppingCart.entity.Cart;
 import com.rookies.nashtech.ShoppingCart.entity.User;
@@ -13,8 +8,12 @@ import com.rookies.nashtech.ShoppingCart.repository.CartRepository;
 import com.rookies.nashtech.ShoppingCart.repository.UserRepository;
 import com.rookies.nashtech.ShoppingCart.service.CartService;
 import javassist.NotFoundException;
-import com.rookies.nashtech.ShoppingCart.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -34,12 +33,11 @@ public class CartServiceImpl implements CartService {
 
   /**
    * Check the existence of a shopping cart belonging to the current user. If not exist, create a new one.
-   * 
+   *
    * @param user User object input
-   * @throws NotFoundException If user not found with User input
-   * @throws IllegalArgumentException if User input is null
    * @return An exist Entity Cart or Cart just created
-   * 
+   * @throws NotFoundException        If user not found with User input
+   * @throws IllegalArgumentException if User input is null
    * @author ManhTuan
    */
   @Override
@@ -48,7 +46,7 @@ public class CartServiceImpl implements CartService {
       throw new IllegalArgumentException("Username cannot be null!");
     }
     Optional<Cart> optionalCart = cartRepository.findByUser(user);
-    if (!optionalCart.isPresent()) {
+    if (optionalCart.isEmpty()) {
       return createCart(user);
     }
     return optionalCart.get();
@@ -56,12 +54,11 @@ public class CartServiceImpl implements CartService {
 
   /**
    * Create Cart for current User login
-   * 
-   * @param username User object input
-   * @throws NotFoundException If User not found
-   * @throws IllegarArgumentException If User input is null
+   *
+   * @param User object input
    * @return Created Entity Cart
-   * 
+   * @throws NotFoundException        If User not found
+   * @throws IllegalArgumentException If User input is null
    * @author ManhTuan
    */
   @Override
@@ -71,7 +68,7 @@ public class CartServiceImpl implements CartService {
       throw new IllegalArgumentException("User cannot be null!");
     }
     Optional<User> optionalUser = userRepository.findByUsername(user.getUsername());
-    if (!optionalUser.isPresent()) {
+    if (optionalUser.isEmpty()) {
       throw new NotFoundException("User not found with username: " + user);
     }
     Cart cart = new Cart();
@@ -81,10 +78,9 @@ public class CartServiceImpl implements CartService {
 
   /**
    * Mapping CartDTO to Cart
-   * 
+   *
    * @param payload CartDTO needs to mapped
    * @return An Entity Cart
-   * 
    * @author ManhTuan
    */
   @Override

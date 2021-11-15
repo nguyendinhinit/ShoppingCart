@@ -17,38 +17,38 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
-    @Bean
-    public Docket apiV1() {
-        String version = "v1";
-        return new Docket(DocumentationType.SWAGGER_2)
-                .apiInfo(apiInfo())
-                .groupName(version)
-                .select()
-                .apis(RequestHandlerSelectors.any())
-                .paths(PathSelectors.regex(".*/" + version + "/.*"))
-                .build();
-    }
+  @Bean
+  public Docket apiV1() {
+    String version = "v1";
+    return new Docket(DocumentationType.SWAGGER_2)
+            .apiInfo(apiInfo())
+            .groupName(version)
+            .select()
+            .apis(RequestHandlerSelectors.any())
+            .paths(PathSelectors.regex(".*/" + version + "/.*"))
+            .build();
+  }
 
-    private ApiInfo apiInfo() {
-        return new ApiInfoBuilder()
-                .title("Demo")
-                .description("Demo")
-                .contact(new Contact("Nguyen", "", "nguyendinhit319@gmail.com"))
-                .build();
-    }
+  private ApiInfo apiInfo() {
+    return new ApiInfoBuilder()
+            .title("Demo")
+            .description("Demo")
+            .contact(new Contact("Nguyen", "", "nguyendinhit319@gmail.com"))
+            .build();
+  }
 
-    @RequestMapping(value = "/api", method = RequestMethod.GET)
-    public ModelAndView redirect() {
-        return new ModelAndView("redirect:/swagger-ui.html");
-    }
+  @RequestMapping(value = "/api", method = RequestMethod.GET)
+  public ModelAndView redirect() {
+    return new ModelAndView("redirect:/swagger-ui.html");
+  }
 
-    @RequestMapping(value = "/api", method = RequestMethod.GET)
-    public ModelAndView redirectApi() {
-        return new ModelAndView("redirect:/swagger-ui.html");
-    }
+  @RequestMapping(value = "/api", method = RequestMethod.GET)
+  public ModelAndView redirectApi() {
+    return new ModelAndView("redirect:/swagger-ui.html");
+  }
 
-    @RequestMapping(value = "/doc", method = RequestMethod.GET)
-    public ModelAndView redirectDoc() {
-        return new ModelAndView("redirect:/swagger-ui.html");
-    }
+  @RequestMapping(value = "/doc", method = RequestMethod.GET)
+  public ModelAndView redirectDoc() {
+    return new ModelAndView("redirect:/swagger-ui.html");
+  }
 }

@@ -14,19 +14,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1")
 public class HomePageController {
-    private final ProductService productService;
+  private final ProductService productService;
 
-    @Autowired
-    public HomePageController(ProductService productService){
-        this.productService = productService;
-    }
+  @Autowired
+  public HomePageController(ProductService productService) {
+    this.productService = productService;
+  }
 
-    @ApiOperation(value = "Get An Asset Using id", response = ProductDTO.class)
-    @GetMapping(value = "/assets/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProductDTO> getProduct(@PathVariable Integer id) {
+  @ApiOperation(value = "Get An Asset Using id", response = ProductDTO.class)
+  @GetMapping(value = "/assets/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<ProductDTO> getProduct(@PathVariable Integer id) {
 //        logger.info("Execute getAsset() inside AssetController");
-        ProductDTO product = productService.findProductByID(id);
+    ProductDTO product = productService.findProductByID(id);
 //        logger.info("Executed successful!");
-        return ResponseEntity.ok(product);
-    }
+    return ResponseEntity.ok(product);
+  }
 }

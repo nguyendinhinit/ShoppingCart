@@ -1,11 +1,5 @@
 package com.rookies.nashtech.ShoppingCart.service.impl;
 
-import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import com.rookies.nashtech.ShoppingCart.dto.CartDTO;
 import com.rookies.nashtech.ShoppingCart.dto.CartItemDTO;
 import com.rookies.nashtech.ShoppingCart.entity.Cart;
@@ -21,12 +15,18 @@ import com.rookies.nashtech.ShoppingCart.service.CartItemService;
 import com.rookies.nashtech.ShoppingCart.service.CartService;
 import com.rookies.nashtech.ShoppingCart.service.ProductService;
 import javassist.NotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 /**
  * Business logic of Cart.
- * 
- * @author ManhTuan
  *
+ * @author ManhTuan
  */
 @Service
 @Transactional(readOnly = true)
@@ -38,7 +38,6 @@ public class CartItemServiceImpl implements CartItemService {
   private final CartRepository cartRepository;
   private final CartItemRepository cartItemRepository;
   private final CartItemMapper mapper;
-  private final UserRepository userRepository;
   private final ProductRepository productRepository;
   private final ProductService productService;
 
@@ -48,19 +47,17 @@ public class CartItemServiceImpl implements CartItemService {
     this.cartRepository = cartRepository;
     this.cartItemRepository = cartItemRepository;
     this.mapper = mapper;
-    this.userRepository = userRepository;
     this.productRepository = productRepository;
     this.productService = productService;
   }
 
   /**
    * Add Product to Cart
-   * 
+   *
    * @param payload the {@link CartDTO} input
    * @return CartDTO just added
    * @throws NotFoundException
    * @throws IllegalArgumentException if payload input is {@code null}, {@code invalid} or {@code null} User, Product, or {@code invalid} Quantity
-   * 
    */
   @Override
   @Transactional
@@ -133,7 +130,7 @@ public class CartItemServiceImpl implements CartItemService {
 
   /**
    * Map a DTO {@link CartItemDTO} to Entity {@link CartItem}
-   * 
+   *
    * @param payload CartItemDTO which needs to be mapped
    * @return {@link Cart} mapped from DTO input
    */
@@ -150,7 +147,6 @@ public class CartItemServiceImpl implements CartItemService {
     cartItem.setQuantity(payload.getQuantity());
     return cartItem;
   }
-
 
 
 }
