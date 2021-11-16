@@ -1,14 +1,15 @@
 package com.rookies.nashtech.ShoppingCart.entity;
 
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Getter
@@ -17,7 +18,6 @@ import lombok.ToString;
 @RequiredArgsConstructor
 @Table(name = "users")
 public class User {
-
   @Id
   @Column(name = "username")
   private String username;

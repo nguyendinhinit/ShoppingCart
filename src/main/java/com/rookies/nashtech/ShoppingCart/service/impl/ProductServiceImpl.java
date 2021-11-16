@@ -38,14 +38,14 @@ public class ProductServiceImpl implements ProductService {
 
   @Override
   public List<ProductDTO> filterProduct(String keyword, Float price) {
-    List<Product> products = productRepository.filter(keyword, price);
+    List<Product> products = productRepository.filter(keyword, price.doubleValue());
     return products.stream().map(productsMapper::fromEntity).collect(Collectors.toList());
   }
 
   /**
    * Decrease Product quantity in case update Cart.
-   * 
-   * @param id The Product id
+   *
+   * @param id     The Product id
    * @param number The decrease number
    * @return The ProductDTO has been decreased.
    * @author ManhTuan
@@ -68,8 +68,8 @@ public class ProductServiceImpl implements ProductService {
 
   /**
    * Increase Product quantity in case update Cart.
-   * 
-   * @param id The Product id
+   *
+   * @param id     The Product id
    * @param number The increase number
    * @return The ProductDTO has been increased.
    * @author ManhTuan
@@ -86,23 +86,23 @@ public class ProductServiceImpl implements ProductService {
     return productsMapper.fromEntity(decreasedQuantityProduct);
   }
 
-    @Override
-    public List<ProductDTO> filterProduct(String keyword, Double price) {
-        List<Product> products = productRepository.filter(keyword, price);
-        return products.stream().map(productsMapper::fromEntity).collect(Collectors.toList());
-    }
+  @Override
+  public List<ProductDTO> filterProduct(String keyword, Double price) {
+    List<Product> products = productRepository.filter(keyword, price);
+    return products.stream().map(productsMapper::fromEntity).collect(Collectors.toList());
+  }
 
-    @Override
-    public List<ProductDTO> findProductByPriceWithPaging(Double price, Integer paging) {
-        Pageable firstPageWithPagingElement = PageRequest.of(0, paging);
-        Pageable secondPageWithPagingElement = PageRequest.of(1, paging);
-        Page<Product> allProduct = productRepository.findProductsByPrice(price,firstPageWithPagingElement);
-        return allProduct.stream().map(productsMapper::fromEntity).collect(Collectors.toList());
-    }
+  @Override
+  public List<ProductDTO> findProductByPriceWithPaging(Double price, Integer paging) {
+    Pageable firstPageWithPagingElement = PageRequest.of(0, paging);
+    Pageable secondPageWithPagingElement = PageRequest.of(1, paging);
+    Page<Product> allProduct = productRepository.findProductsByPrice(price, firstPageWithPagingElement);
+    return allProduct.stream().map(productsMapper::fromEntity).collect(Collectors.toList());
+  }
 
   /**
    * Get Product Entity by id
-   * 
+   *
    * @param id The Integer id input
    * @return A Product Entity
    * @author ManhTuan
