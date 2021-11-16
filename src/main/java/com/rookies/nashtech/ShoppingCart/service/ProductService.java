@@ -4,10 +4,7 @@ import java.util.List;
 import com.rookies.nashtech.ShoppingCart.dto.ProductDTO;
 import com.rookies.nashtech.ShoppingCart.entity.Product;
 
-
-  List<ProductDTO> filterProduct(String keyword, Double price);
-
-  List<ProductDTO> findProductByPriceWithPaging(Double price, Integer paging);
+public interface ProductService {
 
   ProductDTO findProductByID(Integer id);
 
