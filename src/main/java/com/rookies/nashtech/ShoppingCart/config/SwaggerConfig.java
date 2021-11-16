@@ -47,6 +47,7 @@ public class SwaggerConfig {
 
   private SecurityReference basicAuthReference() {
     return new SecurityReference("basicAuth", new AuthorizationScope[0]);
+  }
 
   @RequestMapping(value = "/api", method = RequestMethod.GET)
   public ModelAndView redirect() {
