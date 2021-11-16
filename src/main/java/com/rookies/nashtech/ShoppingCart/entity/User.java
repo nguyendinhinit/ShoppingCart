@@ -1,15 +1,14 @@
 package com.rookies.nashtech.ShoppingCart.entity;
 
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Getter
@@ -33,7 +32,4 @@ public class User {
 
   @Column(name = "phone_number")
   private String phoneNumber;
-
-  @Column(name = "role")
-  private String role;
 }
