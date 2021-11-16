@@ -1,5 +1,6 @@
 package com.rookies.nashtech.ShoppingCart.mapper;
 
+import org.springframework.stereotype.Component;
 import com.rookies.nashtech.ShoppingCart.dto.OrderDTO;
 import com.rookies.nashtech.ShoppingCart.entity.Order;
 import com.rookies.nashtech.ShoppingCart.payload.OrderPayload;
