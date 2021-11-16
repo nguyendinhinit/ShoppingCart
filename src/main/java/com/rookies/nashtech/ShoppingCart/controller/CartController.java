@@ -1,9 +1,5 @@
 package com.rookies.nashtech.ShoppingCart.controller;
 
-import com.rookies.nashtech.ShoppingCart.dto.CartDTO;
-import com.rookies.nashtech.ShoppingCart.service.CartService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +7,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.rookies.nashtech.ShoppingCart.dto.CartDTO;
 import com.rookies.nashtech.ShoppingCart.dto.CartItemDTO;
 import com.rookies.nashtech.ShoppingCart.service.CartItemService;
 import io.swagger.annotations.ApiOperation;

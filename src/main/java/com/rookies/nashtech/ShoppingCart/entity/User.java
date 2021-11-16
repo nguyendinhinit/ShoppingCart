@@ -10,8 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.*;
-
 @Entity
 @Getter
 @Setter
@@ -35,4 +33,7 @@ public class User {
 
   @Column(name = "phone_number")
   private String phoneNumber;
+
+  @Column(name = "role")
+  private String role;
 }
