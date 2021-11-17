@@ -22,7 +22,7 @@ public class Product {
   @Column(name = "name")
   private String name;
   @Column(name = "price")
-  private float price;
+  private Double price;
   @Column(name = "brand")
   private String brand;
   @Column(name = "color")
