@@ -1,5 +1,12 @@
 package com.rookies.nashtech.ShoppingCart.service.impl;
 
+import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.rookies.nashtech.ShoppingCart.dto.CartDTO;
 import com.rookies.nashtech.ShoppingCart.dto.CartItemDTO;
 import com.rookies.nashtech.ShoppingCart.entity.Cart;
@@ -14,14 +21,8 @@ import com.rookies.nashtech.ShoppingCart.repository.UserRepository;
 import com.rookies.nashtech.ShoppingCart.service.CartItemService;
 import com.rookies.nashtech.ShoppingCart.service.CartService;
 import com.rookies.nashtech.ShoppingCart.service.ProductService;
+import com.rookies.nashtech.ShoppingCart.util.JwtUtil;
 import javassist.NotFoundException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 /**
  * Business logic of Cart.
@@ -40,28 +41,31 @@ public class CartItemServiceImpl implements CartItemService {
   private final CartItemMapper mapper;
   private final ProductRepository productRepository;
   private final ProductService productService;
+  private final JwtUtil jwtUtil;
 
   @Autowired
-  public CartItemServiceImpl(CartService cartService, CartRepository cartRepository, CartItemRepository cartItemRepository, CartItemMapper mapper, UserRepository userRepository, ProductRepository productRepository, ProductService productService) {
+  public CartItemServiceImpl(CartService cartService, CartRepository cartRepository, CartItemRepository cartItemRepository, CartItemMapper mapper, UserRepository userRepository, ProductRepository productRepository, ProductService productService, JwtUtil jwtUtil) {
     this.cartService = cartService;
     this.cartRepository = cartRepository;
     this.cartItemRepository = cartItemRepository;
     this.mapper = mapper;
     this.productRepository = productRepository;
     this.productService = productService;
+    this.jwtUtil = jwtUtil;
   }
 
   /**
    * Add Product to Cart
    *
    * @param payload the {@link CartDTO} input
+   * @param request HttpServletRequest
    * @return CartDTO just added
    * @throws NotFoundException
    * @throws IllegalArgumentException if payload input is {@code null}, {@code invalid} or {@code null} User, Product, or {@code invalid} Quantity
    */
   @Override
   @Transactional
-  public CartItemDTO addToCart(CartItemDTO payload) throws NotFoundException {
+  public CartItemDTO addToCart(CartItemDTO payload, HttpServletRequest request) throws NotFoundException {
 
     logger.info("Payload null check");
     if (payload == null) {
@@ -94,12 +98,9 @@ public class CartItemServiceImpl implements CartItemService {
       throw new IllegalArgumentException("Exceeded the number of products. The remaining amount: " + product.getQuantity());
     }
 
-    // Assume username is test1
-    User user = new User();
-    user.setUsername("test1");
-    user.setPassword("123");
-    user.setEmail("test1@gmail.com");
-    user.setPhoneNumber("0123");
+
+    User user = jwtUtil.getUser(request);
+
     Cart cart = cartService.cartCheck(user);
 
     CartItem cartItem = new CartItem();
@@ -110,22 +111,100 @@ public class CartItemServiceImpl implements CartItemService {
     logger.info("Create CartItem.");
     CartItem cartItemCreated = cartItemRepository.save(cartItem);
 
-    productService.decreaseProductQuantity(payload.getProduct().getId(), payload.getQuantity());
+    productService.decreaseProductQuantity(payload.getProduct(), payload.getQuantity());
 
     logger.info("CartItem created with Cart ID: " + payload.getCartId());
     return mapper.fromEntity(cartItemCreated);
   }
 
   @Override
-  public CartItemDTO increaseProductQuantityOfCart(Integer cartId, String userId, Integer productId) {
+  @Transactional
+  public CartItemDTO deleteProductInCart(Integer productId) {
+    logger.info("Product id null check");
+    if (productId == null) {
+      logger.error("Product id is null");
+      throw new IllegalArgumentException("Product id can not be null.");
+    }
 
-    return null;
+    logger.info("Verify Product with Product ID: " + productId);
+    Product product = productRepository.findProductById(productId);
+    if (product == null) {
+      logger.error("Product not found with id : " + productId);
+      throw new IllegalArgumentException("Product not found.");
+    }
+
+    CartItem cartItem = cartItemRepository.findByProduct(product);
+    cartItemRepository.delete(cartItem);
+    productService.increaseProductQuantity(product, cartItem.getQuantity());
+    return mapper.fromEntity(cartItem);
   }
 
   @Override
-  public CartItemDTO decreaseProductQuantityOfCart(Integer cartId, String userId, Integer productId) {
-    // TODO Auto-generated method stub
-    return null;
+  @Transactional
+  public CartItemDTO adjustProductQuantityOfCart(Integer productId, Integer quantity) {
+    logger.info("Product id null check");
+    if (productId == null) {
+      logger.error("Product id is null");
+      throw new IllegalArgumentException("Product id can not be null.");
+    }
+
+    logger.info("Verify Product with Product ID: " + productId);
+    Product product = productRepository.findProductById(productId);
+    if (product == null) {
+      logger.error("Product not found with id : " + productId);
+      throw new IllegalArgumentException("Product not found.");
+    }
+
+    logger.info("Compare to quantity of product;");
+    if (quantity > product.getQuantity()) {
+      logger.error("Exceeded the number of products. Current: " + quantity + ". Actual: " + product.getQuantity());
+      throw new IllegalArgumentException("Exceeded the number of products. The remaining amount: " + product.getQuantity());
+    }
+
+    CartItem cartItem = cartItemRepository.findByProduct(product);
+    CartItemDTO cartItemDTO = new CartItemDTO();
+    if (quantity > 0) {
+      cartItemDTO = increaseProductQuantityOfCart(product, cartItem, quantity);
+    }
+    if (quantity < 0) {
+      cartItemDTO = decreaseProductQuantityOfCart(product, cartItem, quantity);
+    }
+    return cartItemDTO;
+  }
+
+  /**
+   * Increase number of product in Cart
+   * 
+   * @return CartItemDTO after augment
+   */
+  @Override
+  @Transactional
+  public CartItemDTO increaseProductQuantityOfCart(Product product, CartItem cartItem, Integer quantity) {
+    Integer newQuantity = cartItem.getQuantity() + quantity;
+    cartItem.setQuantity(newQuantity);
+    CartItem cartItemAdjustedQuantity = cartItemRepository.save(cartItem);
+    productService.decreaseProductQuantity(product, quantity);
+    return mapper.fromEntity(cartItemAdjustedQuantity);
+  }
+
+  /**
+   * Decrease number of product in Cart
+   * 
+   * @return CartItemDTO after reduce
+   * @throws IllegalArgumentException
+   */
+  @Override
+  @Transactional
+  public CartItemDTO decreaseProductQuantityOfCart(Product product, CartItem cartItem, Integer quantity) {
+    if (cartItem.getQuantity() < Math.abs(quantity)) {
+      logger.error("The number of products you want to reduce is more than the quantity in the cart. Quantity you want to decrease: " + Math.abs(quantity) + ". Actual in your Cart: " + cartItem.getQuantity());
+      throw new IllegalArgumentException("The number of products you want to reduce is more than the quantity in the cart. Quantity you want to decrease: " + Math.abs(quantity) + ". Actual in your Cart: " + cartItem.getQuantity());
+    }
+    Integer newQuantity = cartItem.getQuantity() + quantity;
+    cartItem.setQuantity(newQuantity);
+    CartItem cartItemAdjustedQuantity = cartItemRepository.save(cartItem);
+    productService.increaseProductQuantity(product, Math.abs(quantity));
+    return mapper.fromEntity(cartItemAdjustedQuantity);
   }
 
   /**
@@ -147,6 +226,7 @@ public class CartItemServiceImpl implements CartItemService {
     cartItem.setQuantity(payload.getQuantity());
     return cartItem;
   }
+
 
 
 }

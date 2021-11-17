@@ -14,9 +14,9 @@ public interface ProductService {
 
   List<ProductDTO> filterProduct(String keyword, Float price);
 
-  ProductDTO decreaseProductQuantity(Integer id, Integer number);
+  ProductDTO decreaseProductQuantity(Product product, Integer number);
 
-  ProductDTO increaseProductQuantity(Integer id, Integer number);
+  ProductDTO increaseProductQuantity(Product product, Integer number);
 
   Product findProductEntityByID(Integer id);
 
