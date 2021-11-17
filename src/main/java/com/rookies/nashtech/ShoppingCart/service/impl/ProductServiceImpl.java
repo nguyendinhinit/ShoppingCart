@@ -1,10 +1,7 @@
 package com.rookies.nashtech.ShoppingCart.service.impl;
 
-import com.rookies.nashtech.ShoppingCart.dto.ProductDTO;
-import com.rookies.nashtech.ShoppingCart.entity.Product;
-import com.rookies.nashtech.ShoppingCart.mapper.ProductMapper;
-import com.rookies.nashtech.ShoppingCart.repository.ProductRepository;
-import com.rookies.nashtech.ShoppingCart.service.ProductService;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +10,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import com.rookies.nashtech.ShoppingCart.dto.ProductDTO;
+import com.rookies.nashtech.ShoppingCart.entity.Product;
+import com.rookies.nashtech.ShoppingCart.mapper.ProductMapper;
+import com.rookies.nashtech.ShoppingCart.repository.ProductRepository;
+import com.rookies.nashtech.ShoppingCart.service.ProductService;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -45,15 +44,14 @@ public class ProductServiceImpl implements ProductService {
   /**
    * Decrease Product quantity in case update Cart.
    *
-   * @param id     The Product id
+   * @param id The Product id
    * @param number The decrease number
    * @return The ProductDTO has been decreased.
    * @author ManhTuan
    */
   @Override
   @Transactional
-  public ProductDTO decreaseProductQuantity(Integer id, Integer number) {
-    Product product = findProductEntityByID(id);
+  public ProductDTO decreaseProductQuantity(Product product, Integer number) {
     int currentQuantity = product.getQuantity();
     if (currentQuantity < number) {
       logger.error("Quantity to be reduced is more than existing quantity.");
@@ -69,15 +67,14 @@ public class ProductServiceImpl implements ProductService {
   /**
    * Increase Product quantity in case update Cart.
    *
-   * @param id     The Product id
+   * @param id The Product id
    * @param number The increase number
    * @return The ProductDTO has been increased.
    * @author ManhTuan
    */
   @Override
   @Transactional
-  public ProductDTO increaseProductQuantity(Integer id, Integer number) {
-    Product product = findProductEntityByID(id);
+  public ProductDTO increaseProductQuantity(Product product, Integer number) {
     int currentQuantity = product.getQuantity();
     logger.info("Increase Product quantity by " + number + " unit(s).");
     product.setQuantity(currentQuantity + number);

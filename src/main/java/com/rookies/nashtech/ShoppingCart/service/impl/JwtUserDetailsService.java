@@ -23,6 +23,7 @@ public class JwtUserDetailsService implements UserDetailsService {
     if (optionalUser.isPresent()) {
       userBuilder = User.withUsername(username);
       userBuilder.password(optionalUser.get().getPassword());
+      userBuilder.roles("ADMIN");
       // userBuilder.password(new BCryptPasswordEncoder().encode(optionalUser.get().getPassword()));
     } else {
       throw new UsernameNotFoundException("Username not found");
