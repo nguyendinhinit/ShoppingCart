@@ -1,6 +1,5 @@
 package com.rookies.nashtech.ShoppingCart.mapper;
 
-import org.springframework.stereotype.Component;
 import com.rookies.nashtech.ShoppingCart.dto.OrderDTO;
 import com.rookies.nashtech.ShoppingCart.entity.Order;
 import com.rookies.nashtech.ShoppingCart.payload.OrderPayload;
@@ -19,7 +18,20 @@ public class OrderMapper {
   }
 
   public OrderDTO fromPayload(OrderPayload payload) {
-    return null;
+    OrderDTO orderDTO = new OrderDTO();
+    orderDTO.setUsername(payload.getUsername());
+    orderDTO.setDateCreated(payload.getDateCreated());
+    orderDTO.setTotalCost(payload.getTotalCost());
+    orderDTO.setState(payload.getState());
+    return orderDTO;
+  }
+
+  public Order fromDTO(OrderDTO orderDTO) {
+    Order order = new Order();
+    order.setDateCreated(orderDTO.getDateCreated());
+    order.setTotalCost(orderDTO.getTotalCost());
+    order.setState(orderDTO.getState());
+    return order;
   }
 
 

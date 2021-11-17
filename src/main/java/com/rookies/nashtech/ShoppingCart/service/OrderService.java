@@ -6,13 +6,13 @@ import com.rookies.nashtech.ShoppingCart.payload.OrderPayload;
 import java.util.List;
 
 public interface OrderService {
-  OrderDTO payOrderById(int orderId);
+  OrderDTO payOrderById(Integer orderId);
 
   List<OrderDTO> getAllOrders();
 
-  OrderDTO getOrderById(int orderId);
+  OrderDTO getOrderById(Integer orderId);
 
   OrderDTO createOrder(OrderPayload payload);
 
-  void deleteOrderById(int orderId);
+  void deleteOrderById(Integer orderId);
 }

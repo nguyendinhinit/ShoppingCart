@@ -1,18 +1,15 @@
 package com.rookies.nashtech.ShoppingCart.controller;
 
-import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import com.rookies.nashtech.ShoppingCart.dto.ProductDTO;
 import com.rookies.nashtech.ShoppingCart.service.ProductService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -40,7 +37,7 @@ public class ProductController {
   // SOLID
 
   @ApiOperation(value = "Get all product", authorizations = {@Authorization(value = "jwtToken")})
-  @GetMapping(value = "/product/getall")
+  @GetMapping(value = "/product/all")
   public ResponseEntity<List<ProductDTO>> getAll() {
     List<ProductDTO> products = productService.findProductByPriceWithPaging(100.0, 5);
     return ResponseEntity.ok(products);
