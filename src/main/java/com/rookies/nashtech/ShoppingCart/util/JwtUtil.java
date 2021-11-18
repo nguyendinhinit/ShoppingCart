@@ -8,7 +8,7 @@ import com.rookies.nashtech.ShoppingCart.entity.User;
 import com.rookies.nashtech.ShoppingCart.repository.UserRepository;
 
 @Component
-public class JwtUtil {
+public final class JwtUtil {
   @Autowired
   private UserRepository userRepository;
 
@@ -16,6 +16,10 @@ public class JwtUtil {
   private JwtTokenUtil jwtTokenUtil;
 
   public User getUser(HttpServletRequest request) {
-    return userRepository.findByUsername(jwtTokenUtil.getUsernameFromToken(request.getHeader("Authorization").substring(7))).get();
+    return userRepository.findByUsername(jwtTokenUtil.getUsernameFromToken(request.getHeader("Authorization").split(" ")[1])).get();
+  }
+
+  public String caideogithe(HttpServletRequest request) {
+    return request.getHeader("");
   }
 }

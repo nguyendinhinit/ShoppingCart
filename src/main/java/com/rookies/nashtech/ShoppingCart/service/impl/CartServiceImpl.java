@@ -1,19 +1,18 @@
 package com.rookies.nashtech.ShoppingCart.service.impl;
 
-import com.rookies.nashtech.ShoppingCart.dto.CartDTO;
-import com.rookies.nashtech.ShoppingCart.entity.Cart;
-import com.rookies.nashtech.ShoppingCart.entity.User;
-import com.rookies.nashtech.ShoppingCart.mapper.CartMapper;
-import com.rookies.nashtech.ShoppingCart.repository.CartRepository;
-import com.rookies.nashtech.ShoppingCart.repository.UserRepository;
-import com.rookies.nashtech.ShoppingCart.service.CartService;
-import javassist.NotFoundException;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
+import com.rookies.nashtech.ShoppingCart.dto.CartDTO;
+import com.rookies.nashtech.ShoppingCart.entity.Cart;
+import com.rookies.nashtech.ShoppingCart.entity.User;
+import com.rookies.nashtech.ShoppingCart.exception.NotFoundException;
+import com.rookies.nashtech.ShoppingCart.mapper.CartMapper;
+import com.rookies.nashtech.ShoppingCart.repository.CartRepository;
+import com.rookies.nashtech.ShoppingCart.repository.UserRepository;
+import com.rookies.nashtech.ShoppingCart.service.CartService;
 
 @Service
 @Transactional(readOnly = true)
@@ -36,12 +35,12 @@ public class CartServiceImpl implements CartService {
    *
    * @param user User object input
    * @return An exist Entity Cart or Cart just created
-   * @throws NotFoundException        If user not found with User input
+   * @throws NotFoundException If user not found with User input
    * @throws IllegalArgumentException if User input is null
    * @author ManhTuan
    */
   @Override
-  public Cart cartCheck(User user) throws NotFoundException {
+  public Cart cartCheck(User user) {
     if (user == null) {
       throw new IllegalArgumentException("Username cannot be null!");
     }
@@ -57,13 +56,13 @@ public class CartServiceImpl implements CartService {
    *
    * @param User object input
    * @return Created Entity Cart
-   * @throws NotFoundException        If User not found
+   * @throws NotFoundException If User not found
    * @throws IllegalArgumentException If User input is null
    * @author ManhTuan
    */
   @Override
   @Transactional
-  public Cart createCart(User user) throws NotFoundException {
+  public Cart createCart(User user) {
     if (user == null) {
       throw new IllegalArgumentException("User cannot be null!");
     }
