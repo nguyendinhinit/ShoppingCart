@@ -6,8 +6,6 @@ import com.rookies.nashtech.ShoppingCart.exception.ProductNotFoundException;
 import com.rookies.nashtech.ShoppingCart.mapper.ProductMapper;
 import com.rookies.nashtech.ShoppingCart.repository.ProductRepository;
 import com.rookies.nashtech.ShoppingCart.service.ProductService;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import com.rookies.nashtech.ShoppingCart.dto.ProductDTO;
-import com.rookies.nashtech.ShoppingCart.entity.Product;
-import com.rookies.nashtech.ShoppingCart.mapper.ProductMapper;
-import com.rookies.nashtech.ShoppingCart.repository.ProductRepository;
-import com.rookies.nashtech.ShoppingCart.service.ProductService;
 
 @Service
 public class ProductServiceImpl implements ProductService {

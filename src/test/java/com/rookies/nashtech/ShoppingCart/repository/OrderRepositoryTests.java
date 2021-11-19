@@ -29,6 +29,9 @@ public class OrderRepositoryTests {
   @Autowired
   OrderRepository orderRepository;
 
+  @Autowired
+  OrderProductRepository orderProductRepository;
+
   @Test
   public void testGetAllOrders() {
     List<Order> orders = orderRepository.findAll();
@@ -48,5 +51,15 @@ public class OrderRepositoryTests {
   public void testGetOrderByInvalidIdShouldReturnNull(int orderId) {
     Optional<Order> order = orderRepository.findById(orderId);
     assertTrue(order.isEmpty());
+  }
+
+  @ParameterizedTest(name = "Test: Delete Order by valid ID should delete that Order")
+  @ValueSource(ints = {1, 2})
+  public void testDeleteOrderByValidIdShouldDeleteOrder(int orderId) {
+    Order order1 = orderRepository.findOrderById(orderId);
+    orderProductRepository.deleteAllByOrder(order1);
+    orderRepository.deleteById(orderId);
+    Order order2 = orderRepository.findOrderById(orderId);
+    assertTrue(Optional.ofNullable(order2).isEmpty());
   }
 }

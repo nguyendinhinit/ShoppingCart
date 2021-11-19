@@ -3,7 +3,6 @@ package com.rookies.nashtech.ShoppingCart.controller;
 import com.rookies.nashtech.ShoppingCart.dto.ProductDTO;
 import com.rookies.nashtech.ShoppingCart.service.ProductService;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +20,7 @@ public class ProductController {
     this.productService = productService;
   }
 
-  @ApiOperation(value = "Get a product using id", authorizations = {@Authorization(value = "jwtToken")}, response = ProductDTO.class)
+  @ApiOperation(value = "Get a product using id", response = ProductDTO.class)
   @GetMapping(value = "/product/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<ProductDTO> getProduct(@PathVariable Integer id) {
     ProductDTO product = productService.findProductByID(id);
@@ -36,7 +35,7 @@ public class ProductController {
   // TODO: pageable + Spring data JPA specification
   // SOLID
 
-  @ApiOperation(value = "Get all product", authorizations = {@Authorization(value = "jwtToken")})
+  @ApiOperation(value = "Get all product")
   @GetMapping(value = "/product/all")
   public ResponseEntity<List<ProductDTO>> getAll() {
     List<ProductDTO> products = productService.findProductByPriceWithPaging(100.0, 5);

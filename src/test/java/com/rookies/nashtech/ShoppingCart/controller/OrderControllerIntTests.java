@@ -1,6 +1,10 @@
 package com.rookies.nashtech.ShoppingCart.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rookies.nashtech.ShoppingCart.exception.InvalidDataFormatException;
 import com.rookies.nashtech.ShoppingCart.exception.NotFoundException;
+import com.rookies.nashtech.ShoppingCart.exception.ProductNotFoundException;
+import com.rookies.nashtech.ShoppingCart.exception.UserNotFoundException;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -38,73 +42,183 @@ public class OrderControllerIntTests {
   @Autowired
   MockMvc mockMvc;
 
-  @DisplayName(value = "Test Get Order should work properly")
-  @Nested
-  @WithMockUser(username = "test", password = "1234")
-  public class TestGetOrder {
-    @Test
-    public void testGetAllOrdersShouldReturnAllOrders() throws Exception {
-      mockMvc.perform(MockMvcRequestBuilders
-                      .get("/api/v1/order/all"))
-              .andDo(print())
-              .andExpect(status().isOk())
-              .andExpect(jsonPath("$").isArray())
-              .andExpect(jsonPath("$", IsCollectionWithSize.hasSize(2)))
-              .andExpect(jsonPath("$[*].id").isNotEmpty());
-    }
-
-    @ParameterizedTest(name = "Test Get Order by correct ID should return correct Order")
-    @ValueSource(ints = {1, 2})
-    public void testGetOrderByIdShouldReturnCorrectOrder(int orderId) throws Exception {
-      mockMvc.perform(MockMvcRequestBuilders
-                      .get("/api/v1/order/" + orderId)
-                      .accept(MediaType.APPLICATION_JSON))
-              .andDo(print())
-              .andExpect(status().isOk())
-              .andExpect(jsonPath("$.id").isNotEmpty())
-              .andExpect(jsonPath("$.username").isNotEmpty())
-              .andExpect(jsonPath("$.dateCreated").isNotEmpty())
-              .andExpect(jsonPath("$.totalCost").isNotEmpty())
-              .andExpect(jsonPath("$.state").isNotEmpty());
-    }
-
-    @ParameterizedTest(name = "Test Get Order by invalid ID should throw NotFoundException")
-    @ValueSource(ints = {10, 100, 1000})
-    public void testGetOrderByIdGivenNonExistentIdShouldThrowNotFoundException(int orderId) throws Exception {
-      mockMvc.perform(MockMvcRequestBuilders
-                      .get("/api/v1/order/" + orderId)
-                      .accept(MediaType.APPLICATION_JSON))
-              .andDo(print())
-              .andExpect(status().isNotFound())
-              .andExpect(result -> Assertions.assertTrue(result.getResolvedException() instanceof NotFoundException))
-              .andExpect(result -> Assertions.assertEquals(Objects.requireNonNull(result.getResolvedException()).getMessage(), "No order of id " + orderId));
+  public String asJsonString(final Object obj) {
+    try {
+      return new ObjectMapper().writeValueAsString(obj);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
   }
 
-  @DisplayName(value = "Test: Delete Order should work properly")
-  @Nested
-  @WithMockUser(username = "test", password = "1234")
-  public class TestDeleteOrder {
-    @ParameterizedTest(name = "Test Delete Order by correct ID should delete Order")
-    @ValueSource(ints = {1, 2})
-    public void testDeleteOrderByIdGivenValidIdShouldDeleteOrder(int orderId) throws Exception {
-      mockMvc.perform(MockMvcRequestBuilders
-                      .delete("/api/v1/order/" + orderId)
-                      .accept(MediaType.APPLICATION_JSON))
-              .andDo(print())
-              .andExpect(status().isOk());
+    @DisplayName(value = "Test Get Order should work properly")
+    @Nested
+    @WithMockUser(username = "test", password = "1234")
+    public class TestGetOrder {
+      @Test
+      public void testGetAllOrdersShouldReturnAllOrders() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/api/v1/order/all"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$", IsCollectionWithSize.hasSize(2)))
+                .andExpect(jsonPath("$[*].orderId").isNotEmpty());
+      }
+
+      @ParameterizedTest(name = "Test Get Order by correct ID should return correct Order")
+      @ValueSource(ints = {1, 2})
+      public void testGetOrderByIdShouldReturnCorrectOrder(int orderId) throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/api/v1/order/" + orderId)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.orderId").isNotEmpty())
+                .andExpect(jsonPath("$.username").isNotEmpty())
+                .andExpect(jsonPath("$.dateCreated").isNotEmpty())
+                .andExpect(jsonPath("$.totalCost").isNotEmpty())
+                .andExpect(jsonPath("$.state").isNotEmpty());
+      }
+
+      @ParameterizedTest(name = "Test Get Order by invalid ID should throw NotFoundException")
+      @ValueSource(ints = {10, 100, 1000})
+      public void testGetOrderByIdGivenNonExistentIdShouldThrowNotFoundException(int orderId) throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/api/v1/order/" + orderId)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(result -> Assertions.assertTrue(result.getResolvedException()
+                        instanceof NotFoundException))
+                .andExpect(result -> Assertions.assertEquals(
+                        Objects.requireNonNull(result.getResolvedException()).getMessage(), "No order of id " + orderId));
+      }
     }
 
-    @ParameterizedTest(name = "Test Delete Order by invalid ID should throw exception")
-    @ValueSource(ints = {10, 100, 1000})
-    public void testDeleteOrderByIdGivenInvalidIdShouldThrowException(int orderId) throws Exception {
-      mockMvc.perform(MockMvcRequestBuilders
-                      .delete("/api/v1/order/" + orderId)
-                      .accept(MediaType.APPLICATION_JSON))
-              .andDo(print())
-              .andExpect(status().isNotFound())
-              .andExpect(result -> Assertions.assertTrue(result.getResolvedException() instanceof NotFoundException))
-              .andExpect(result -> Assertions.assertEquals("No order of id " + orderId, Objects.requireNonNull(result.getResolvedException()).getMessage()));
+    @DisplayName(value = "Test: Create Order should work properly")
+    @Nested
+    @WithMockUser(username = "test", password = "1234")
+    public class TestCreateOrder {
+
+      @Test
+      public void testCreateOrderGivenValidPayloadShouldCreateOrder() throws Exception {
+        String validPayload =
+                "{\n" +
+                "  \"dateCreated\": \"2021-11-18T14:36:06.030Z\",\n" +
+                "  \"orderId\": 0,\n" +
+                "  \"products\": [\n" +
+                "    {\n" +
+                "      \"id\": 1,\n" +
+                "      \"name\": \"lorem ipsum\",\n" +
+                "      \"price\": 0,\n" +
+                "      \"quantity\": 2\n" +
+                "    }\n" +
+                "  ],\n" +
+                "  \"state\": \"UNPAID\",\n" +
+                "  \"totalCost\": 0,\n" +
+                "  \"username\": \"test\"\n" +
+                "}";
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .post("/api/v1/order/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(validPayload))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.orderId").isNotEmpty())
+                .andExpect(jsonPath("$.username").isNotEmpty())
+                .andExpect(jsonPath("$.dateCreated").isNotEmpty())
+                .andExpect(jsonPath("$.state").value("UNPAID"))
+                .andExpect(jsonPath("$.totalCost").isNotEmpty())
+                .andExpect(jsonPath("$.products", IsCollectionWithSize.hasSize(1)));
+      }
+
+      @Test
+      public void testCreateOrderGivenInvalidPayloadNoUsernameShouldThrowException() throws Exception {
+        String validPayload =
+                "{\n" +
+                "  \"dateCreated\": \"2021-11-18T14:36:06.030Z\",\n" +
+                "  \"orderId\": 0,\n" +
+                "  \"products\": [\n" +
+                "    {\n" +
+                "      \"id\": 1,\n" +
+                "      \"name\": \"lorem ipsum\",\n" +
+                "      \"price\": 0,\n" +
+                "      \"quantity\": 2\n" +
+                "    }\n" +
+                "  ],\n" +
+                "  \"state\": \"UNPAID\",\n" +
+                "  \"totalCost\": 0,\n" +
+                "  \"username\": \"null-user\"\n" +
+                "}";
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/v1/order/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(validPayload))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(result -> Assertions.assertTrue(result.getResolvedException()
+                        instanceof UserNotFoundException))
+                .andExpect(result -> Assertions.assertEquals("No user of username null-user",
+                        Objects.requireNonNull(result.getResolvedException()).getMessage()));
+      }
+
+      @Test
+      public void testCreateOrderGivenNonExistentProductShouldThrowException() throws Exception {
+        String validPayload = "{\n" +
+                "  \"dateCreated\": \"2021-11-18T14:36:06.030Z\",\n" +
+                "  \"orderId\": 0,\n" +
+                "  \"products\": [\n" +
+                "    {\n" +
+                "      \"id\": 1000,\n" +
+                "      \"name\": \"lorem ipsum\",\n" +
+                "      \"price\": 0,\n" +
+                "      \"quantity\": 2\n" +
+                "    }\n" +
+                "  ],\n" +
+                "  \"state\": \"UNPAID\",\n" +
+                "  \"totalCost\": 0,\n" +
+                "  \"username\": \"test\"\n" +
+                "}";
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/v1/order/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(validPayload))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(result -> Assertions.assertTrue(result.getResolvedException()
+                        instanceof ProductNotFoundException))
+                .andExpect(result -> Assertions.assertEquals("No product of id 1000",
+                        Objects.requireNonNull(result.getResolvedException()).getMessage()));
+      }
     }
-  }
+
+    @DisplayName(value = "Test: Delete Order should work properly")
+    @Nested
+    @WithMockUser(username = "test", password = "1234")
+    public class TestDeleteOrder {
+      @ParameterizedTest(name = "Test Delete Order by correct ID should delete Order")
+      @ValueSource(ints = {1, 2})
+      public void testDeleteOrderByIdGivenValidIdShouldDeleteOrder(int orderId) throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .delete("/api/v1/order/" + orderId)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+      }
+
+      @ParameterizedTest(name = "Test Delete Order by invalid ID should throw exception")
+      @ValueSource(ints = {10, 100, 1000})
+      public void testDeleteOrderByIdGivenInvalidIdShouldThrowException(int orderId) throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .delete("/api/v1/order/" + orderId)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(result -> Assertions.assertTrue(result.getResolvedException() instanceof NotFoundException))
+                .andExpect(result -> Assertions.assertEquals("No order of id " + orderId, Objects.requireNonNull(result.getResolvedException()).getMessage()));
+      }
+    }
 }

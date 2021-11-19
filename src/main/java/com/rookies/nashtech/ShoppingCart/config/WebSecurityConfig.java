@@ -54,12 +54,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
    */
   @Override
   protected void configure(HttpSecurity httpSecurity) throws Exception {
-
+    httpSecurity.cors();
     httpSecurity.csrf()
             .disable()
             .authorizeRequests()
-            .antMatchers("/api/v1/authenticate/").permitAll()
-            .antMatchers("/api/v1/user/").permitAll()
+            .antMatchers("/api/v1/authenticate/**").permitAll()
+            .antMatchers("/api/v1/user/**").permitAll()
+            .antMatchers("/api/v1/product/**").permitAll()
             .anyRequest().authenticated()
             .and()
             .exceptionHandling()
@@ -67,7 +68,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-    httpSecurity.cors();
+
     // Add a filter to validate the tokens with every request
     httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
   }
@@ -80,9 +81,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/swagger-resources/**",
             "/configuration/security",
             "/swagger-ui.html",
-            "/webjars/**",
-            "/api/v1/authenticate/");
+            "/webjars/**");
   }
-
 
 }

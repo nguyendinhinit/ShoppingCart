@@ -3,11 +3,9 @@ package com.rookies.nashtech.ShoppingCart.service;
 import com.rookies.nashtech.ShoppingCart.dto.ProductDTO;
 import com.rookies.nashtech.ShoppingCart.entity.Category;
 import com.rookies.nashtech.ShoppingCart.entity.Product;
-import com.rookies.nashtech.ShoppingCart.exception.NotFoundException;
 import com.rookies.nashtech.ShoppingCart.mapper.ProductMapper;
 import com.rookies.nashtech.ShoppingCart.repository.ProductRepository;
 import com.rookies.nashtech.ShoppingCart.service.impl.ProductServiceImpl;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -16,12 +14,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
-
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,7 +24,7 @@ public class ProductServiceImplTest {
     @Mock
     ProductRepository productRepository;
     @Mock
-    ProductMapper productsMapper;
+    ProductMapper productMapper;
 
     @InjectMocks
     ProductServiceImpl underTest;
@@ -52,7 +47,7 @@ public class ProductServiceImplTest {
 //             define behavior of Repository
             when(productRepository.findProductById(Mockito.anyInt())).thenReturn(product);
 //             define behavior of Mapper
-            when(productsMapper.fromEntity(product)).thenCallRealMethod();
+            when(productMapper.fromEntity(product)).thenCallRealMethod();
 //            call service method
             ProductDTO productDTO = underTest.findProductByID(1);
 //            assert the results
@@ -60,7 +55,5 @@ public class ProductServiceImplTest {
 //            verify
             verify(productRepository).findProductById(1);
         }
-
-
     }
 }

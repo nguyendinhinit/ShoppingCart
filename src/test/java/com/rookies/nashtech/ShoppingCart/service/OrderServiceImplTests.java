@@ -1,17 +1,11 @@
 package com.rookies.nashtech.ShoppingCart.service;
 
-import com.rookies.nashtech.ShoppingCart.dto.OrderDTO;
 import com.rookies.nashtech.ShoppingCart.entity.Order;
-import com.rookies.nashtech.ShoppingCart.entity.OrderProduct;
-import com.rookies.nashtech.ShoppingCart.entity.Product;
-import com.rookies.nashtech.ShoppingCart.entity.User;
 import com.rookies.nashtech.ShoppingCart.exception.NotFoundException;
 import com.rookies.nashtech.ShoppingCart.exception.UserNotFoundException;
 import com.rookies.nashtech.ShoppingCart.mapper.OrderMapper;
 import com.rookies.nashtech.ShoppingCart.payload.OrderPayload;
-import com.rookies.nashtech.ShoppingCart.repository.OrderProductRepository;
 import com.rookies.nashtech.ShoppingCart.repository.OrderRepository;
-import com.rookies.nashtech.ShoppingCart.repository.ProductRepository;
 import com.rookies.nashtech.ShoppingCart.repository.UserRepository;
 import com.rookies.nashtech.ShoppingCart.service.impl.OrderServiceImpl;
 import org.junit.jupiter.api.DisplayName;
@@ -34,19 +28,16 @@ import static org.mockito.Mockito.*;
 @ExtendWith(SpringExtension.class)
 public class OrderServiceImplTests {
   @Mock
-  UserRepository userRepository;
-
-  @Mock
-  ProductRepository productRepository;
-
-  @Mock
-  OrderProductRepository orderProductRepository;
-
-  @Mock
   OrderRepository orderRepository;
 
   @Mock
+  UserRepository userRepository;
+
+  @Mock
   OrderMapper orderMapper;
+
+  @Mock
+  OrderAggregationService orderAggregationService;
 
   @InjectMocks
   OrderServiceImpl underTest;
@@ -59,48 +50,13 @@ public class OrderServiceImplTests {
   }
 
   @Test
-  public void testGetOrderByIdGivenValidIdShouldReturnCorrectOrder() {
-    User mockUser = mock(User.class);
-    when(mockUser.getUsername()).thenReturn("dummy");
-
-    Product mockProduct = mock(Product.class);
-    when(mockProduct.getId()).thenReturn(1);
-    when(mockProduct.getQuantity()).thenReturn(100);
-
-    Order mockOrder = mock(Order.class);
-    when(mockOrder.getId()).thenReturn(1);
-    when(mockOrder.getUser()).thenReturn(mockUser);
-
-    OrderProduct mockOrderProduct = mock(OrderProduct.class);
-
-    when(mockOrderProduct.getId()).thenReturn(1);
-    when(mockOrderProduct.getOrder()).thenReturn(mockOrder);
-    when(mockOrderProduct.getProduct()).thenReturn(mockProduct);
-    when(mockOrderProduct.getQuantity()).thenReturn(10);
-
-    Mockito.when(userRepository.findByUsername("dummy")).thenReturn(Optional.of(mockUser));
-    Mockito.when(productRepository.findProductById(1)).thenReturn(mockProduct);
-    Mockito.when(orderRepository.findOrderById(1)).thenReturn(mockOrder);
-    Mockito.when(orderProductRepository.findById(1)).thenReturn(Optional.of(mockOrderProduct));
-
-    when(orderMapper.fromEntity(mockOrder)).thenCallRealMethod();
-    OrderDTO orderDTO = underTest.getOrderById(1);
-
-    verify(orderRepository, times(1)).findOrderById(1);
-    verify(orderMapper, times(1)).fromEntity(mockOrder);
-
-    assertEquals(orderDTO.getId(), mockOrder.getId());
-    assertEquals(orderDTO.getUsername(), mockOrder.getUser().getUsername());
-  }
-
-  @Test
-  public void testGetAllOrdersShouldCallMapper2Times() {
+  public void testGetAllOrdersShouldCallOrderAggregationService2Times() {
     Order first = new Order();
     Order second = new Order();
     List<Order> orders = Arrays.asList(first, second);
     when(orderRepository.findAll()).thenReturn(orders);
     underTest.getAllOrders();
-    verify(orderMapper, times(2)).fromEntity(any()); // verify mapper call 2 times
+    verify(orderAggregationService, times(2)).aggregate(any()); // verify mapper call 2 times
   }
 
   @Nested
@@ -109,6 +65,7 @@ public class OrderServiceImplTests {
     @Test
     public void testCreateOrderGivenInvalidUsernameShouldThrowException() {
       OrderPayload mockPayload = mock(OrderPayload.class);
+      Mockito.when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
       UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> underTest.createOrder(mockPayload));
       assertEquals("No user of username null", exception.getMessage());
       verify(orderRepository, never()).findOrderById(anyInt());

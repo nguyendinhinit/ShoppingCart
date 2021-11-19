@@ -19,6 +19,7 @@ import com.rookies.nashtech.ShoppingCart.repository.OrderProductRepository;
 import com.rookies.nashtech.ShoppingCart.repository.OrderRepository;
 import com.rookies.nashtech.ShoppingCart.repository.ProductRepository;
 import com.rookies.nashtech.ShoppingCart.repository.UserRepository;
+import com.rookies.nashtech.ShoppingCart.service.OrderAggregationService;
 import com.rookies.nashtech.ShoppingCart.service.OrderService;
 import com.rookies.nashtech.ShoppingCart.util.Calculator;
 import org.slf4j.Logger;
@@ -40,14 +41,16 @@ public class OrderServiceImpl implements OrderService {
   private final OrderProductRepository orderProductRepository;
   private final OrderMapper orderMapper;
   private final OrderProductMapper orderProductMapper;
+  private final OrderAggregationService orderAggregationService;
 
-  public OrderServiceImpl(OrderRepository orderRepository, ProductRepository productRepository, UserRepository userRepository, OrderProductRepository orderProductRepository, OrderMapper orderMapper, OrderProductMapper orderProductMapper) {
+  public OrderServiceImpl(OrderRepository orderRepository, ProductRepository productRepository, UserRepository userRepository, OrderProductRepository orderProductRepository, OrderMapper orderMapper, OrderProductMapper orderProductMapper, OrderAggregationService orderAggregationService) {
     this.orderRepository = orderRepository;
     this.productRepository = productRepository;
     this.userRepository = userRepository;
     this.orderProductRepository = orderProductRepository;
     this.orderMapper = orderMapper;
     this.orderProductMapper = orderProductMapper;
+    this.orderAggregationService = orderAggregationService;
   }
 
   /**
@@ -57,8 +60,8 @@ public class OrderServiceImpl implements OrderService {
    */
   @Transactional
   @Override
-  public List<OrderDTO> getAllOrders() {
-    return orderRepository.findAll().stream().map(orderMapper::fromEntity).collect(Collectors.toList());
+  public List<OrderPayload> getAllOrders() {
+    return orderRepository.findAll().stream().map(orderAggregationService::aggregate).collect(Collectors.toList());
   }
 
   /**
@@ -69,14 +72,14 @@ public class OrderServiceImpl implements OrderService {
    */
   @Transactional
   @Override
-  public OrderDTO getOrderById(Integer orderId) {
+  public OrderPayload getOrderById(Integer orderId) {
     logger.info("Get Order by ID: START");
     Order order = orderRepository.findOrderById(orderId);
     if (Optional.ofNullable(order).isEmpty()) {
       logger.error("Get Order by ID: ERROR - No order of id {}", orderId);
       throw new OrderNotFoundException("No order of id " + orderId);
     }
-    return orderMapper.fromEntity(order);
+    return orderAggregationService.aggregate(order);
   }
 
   /**
@@ -87,7 +90,7 @@ public class OrderServiceImpl implements OrderService {
    */
   @Transactional
   @Override
-  public OrderDTO payOrderById(Integer orderId) {
+  public OrderPayload payOrderById(Integer orderId) {
     logger.info("Pay an Order By ID: START");
     Order currentOrder = orderRepository.findOrderById(orderId);
     if (currentOrder == null) {
@@ -97,7 +100,7 @@ public class OrderServiceImpl implements OrderService {
     currentOrder.setState(BaseConstants.ORDER_PAID);
     orderRepository.save(currentOrder);
     logger.info("Pay an Order By ID: DONE");
-    return orderMapper.fromEntity(currentOrder);
+    return orderAggregationService.aggregate(currentOrder);
   }
 
   /**
@@ -108,7 +111,7 @@ public class OrderServiceImpl implements OrderService {
    */
   @Transactional
   @Override
-  public OrderDTO createOrder(OrderPayload payload) {
+  public OrderPayload createOrder(OrderPayload payload) {
     // persist order first
     Optional<User> user = userRepository.findByUsername(payload.getUsername());
     if (user.isEmpty()) {
@@ -165,7 +168,7 @@ public class OrderServiceImpl implements OrderService {
     orderRepository.save(newOrder);
 
     // return the OrderDTO only
-    return orderDTO;
+    return orderAggregationService.aggregate(newOrder);
   }
 
   /**
